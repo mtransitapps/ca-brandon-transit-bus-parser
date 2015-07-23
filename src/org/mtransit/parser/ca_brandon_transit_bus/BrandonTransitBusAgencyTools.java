@@ -85,18 +85,18 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public long getRouteId(GRoute gRoute) {
-		if (Utils.isDigitsOnly(gRoute.route_short_name)) {
-			return Long.parseLong(gRoute.route_short_name);
+		if (Utils.isDigitsOnly(gRoute.getRouteShortName())) {
+			return Long.parseLong(gRoute.getRouteShortName());
 		}
-		Matcher matcher = DIGITS.matcher(gRoute.route_short_name);
+		Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
 		matcher.find();
 		return Long.parseLong(matcher.group());
 	}
 
 	@Override
 	public String getRouteShortName(GRoute gRoute) {
-		if (!Utils.isDigitsOnly(gRoute.route_short_name)) {
-			Matcher matcher = DIGITS.matcher(gRoute.route_short_name);
+		if (!Utils.isDigitsOnly(gRoute.getRouteShortName())) {
+			Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
 			matcher.find();
 			return matcher.group();
 		}
@@ -110,12 +110,12 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public String getRouteLongName(GRoute gRoute) {
-		if (gRoute.route_short_name.startsWith(RSN_20_STARTS_WITH)) {
+		if (gRoute.getRouteShortName().startsWith(RSN_20_STARTS_WITH)) {
 			return RLN_20;
-		} else if (gRoute.route_short_name.startsWith(RSN_21_STARTS_WITH)) {
+		} else if (gRoute.getRouteShortName().startsWith(RSN_21_STARTS_WITH)) {
 			return RLN_21;
 		}
-		String routeLongName = gRoute.route_long_name;
+		String routeLongName = gRoute.getRouteLongName();
 		routeLongName = CleanUtils.cleanNumbers(routeLongName);
 		routeLongName = CleanUtils.cleanStreetTypes(routeLongName);
 		return CleanUtils.cleanLabel(routeLongName);
@@ -142,8 +142,8 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public String getRouteColor(GRoute gRoute) {
-		if (Utils.isDigitsOnly(gRoute.route_short_name)) {
-			int rsn = Integer.parseInt(gRoute.route_short_name);
+		if (Utils.isDigitsOnly(gRoute.getRouteShortName())) {
+			int rsn = Integer.parseInt(gRoute.getRouteShortName());
 			switch (rsn) {
 			// @formatter:off
 			case 1: return COLOR_EC222C;
@@ -156,7 +156,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 			// @formatter:on
 			}
 		}
-		Matcher matcher = DIGITS.matcher(gRoute.route_short_name);
+		Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
 		matcher.find();
 		int rsn = Integer.parseInt(matcher.group());
 		switch (rsn) {
@@ -241,15 +241,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public Pair<Long[], Integer[]> splitTripStop(MRoute mRoute, GTrip gTrip, GTripStop gTripStop, ArrayList<MTrip> splitTrips, GSpec routeGTFS) {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.id)) {
-			RouteTripSpec rts = ALL_ROUTE_TRIPS2.get(mRoute.id);
-			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, //
-					rts.getBeforeAfterStopIds(0), //
-					rts.getBeforeAfterStopIds(1), //
-					rts.getBeforeAfterBothStopIds(0), //
-					rts.getBeforeAfterBothStopIds(1), //
-					rts.getTripId(0), //
-					rts.getTripId(1), //
-					rts.getAllBeforeAfterStopIds());
+			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.id));
 		}
 		return super.splitTripStop(mRoute, gTrip, gTripStop, splitTrips, routeGTFS);
 	}
