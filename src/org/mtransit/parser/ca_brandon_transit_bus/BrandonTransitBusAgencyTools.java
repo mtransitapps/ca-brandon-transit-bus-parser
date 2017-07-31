@@ -88,33 +88,31 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 		if (Utils.isDigitsOnly(gRoute.getRouteShortName())) {
 			return Long.parseLong(gRoute.getRouteShortName());
 		}
+		if ("IND".equals(gRoute.getRouteShortName())) {
+			return 9001L;
+		}
 		Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
-		matcher.find();
-		return Long.parseLong(matcher.group());
+		if (matcher.find()) {
+			return Long.parseLong(matcher.group());
+		}
+		System.out.printf("\nUnexpected route ID for %s!\n", gRoute);
+		System.exit(-1);
+		return -1l;
 	}
 
 	@Override
 	public String getRouteShortName(GRoute gRoute) {
 		if (!Utils.isDigitsOnly(gRoute.getRouteShortName())) {
 			Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
-			matcher.find();
-			return matcher.group();
+			if (matcher.find()) {
+				return matcher.group();
+			}
 		}
 		return super.getRouteShortName(gRoute);
 	}
 
-	private static final String RLN_20 = "City Circular 20";
-	private static final String RLN_21 = "City Circular 21";
-	private static final String RSN_20_STARTS_WITH = "20";
-	private static final String RSN_21_STARTS_WITH = "21";
-
 	@Override
 	public String getRouteLongName(GRoute gRoute) {
-		if (gRoute.getRouteShortName().startsWith(RSN_20_STARTS_WITH)) {
-			return RLN_20;
-		} else if (gRoute.getRouteShortName().startsWith(RSN_21_STARTS_WITH)) {
-			return RLN_21;
-		}
 		String routeLongName = gRoute.getRouteLongName();
 		routeLongName = CleanUtils.cleanNumbers(routeLongName);
 		routeLongName = CleanUtils.cleanStreetTypes(routeLongName);
@@ -130,40 +128,34 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 		return AGENCY_COLOR;
 	}
 
-	private static final String COLOR_EC222C = "EC222C";
-	private static final String COLOR_F9D66A = "F9D66A";
-	private static final String COLOR_8F1A8F = "8F1A8F";
-	private static final String COLOR_F033A3 = "F033A3";
-	private static final String COLOR_28BAF2 = "28BAF2";
-	private static final String COLOR_2E3192 = "2E3192";
-	private static final String COLOR_7DCC2B = "7DCC2B";
-	private static final String COLOR_416025 = "416025";
-	private static final String COLOR_A83E28 = "A83E28";
-
 	@Override
 	public String getRouteColor(GRoute gRoute) {
 		if (Utils.isDigitsOnly(gRoute.getRouteShortName())) {
 			int rsn = Integer.parseInt(gRoute.getRouteShortName());
 			switch (rsn) {
 			// @formatter:off
-			case 1: return COLOR_EC222C;
-			case 4: return COLOR_F9D66A;
-			case 5: return COLOR_8F1A8F;
-			case 6: return COLOR_F033A3;
-			case 9: return COLOR_28BAF2;
-			case 10: return COLOR_2E3192;
-			case 11: return COLOR_A83E28;
+			case 4: return "409AED";
+			case 5: return "A83800";
+			case 8: return "F8E208"; // "FAEB52";
+			case 14: return "960096";
+			case 15: return "0070FF";
+			case 16: return "66C7EB";
+			case 17: return "FF00C4";
+			case 22: return "FFAB00";
+			case 23: return "73B373";
 			// @formatter:on
 			}
 		}
+		if ("IND".equals(gRoute.getRouteShortName())) {
+			return "4F4C4C";
+		}
 		Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
-		matcher.find();
-		int rsn = Integer.parseInt(matcher.group());
-		switch (rsn) {
-		// @formatter:off
-		case 20: return COLOR_7DCC2B;
-		case 21: return COLOR_416025;
-		// @formatter:on
+		if (matcher.find()) {
+			int rsn = Integer.parseInt(matcher.group());
+			switch (rsn) {
+			// @formatter:off
+			// @formatter:on
+			}
 		}
 		System.out.printf("\nUnexpected route color for %s!\n", gRoute);
 		System.exit(-1);
@@ -171,53 +163,165 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 	}
 
 	private static final String DOWNTOWN_TERMINAL = "Downtown Terminal";
-	private static final String WEST = "West";
-	private static final String SOUTH = "South";
 	private static final String TRANS_CANADA = "TransCanada";
-	private static final String BRHA = "BRHA";
 
 	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
 	static {
 		HashMap<Long, RouteTripSpec> map2 = new HashMap<Long, RouteTripSpec>();
-		map2.put(1l, new RouteTripSpec(1l, //
-				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL, //
-				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, WEST) //
-				.addTripSort(MDirectionType.EAST.intValue(), //
-						Arrays.asList(new String[] { "2036", "2030", "1" })) //
-				.addTripSort(MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { "1", "2010", "2036" })) //
-				.compileBothTripSort());
 		map2.put(4l, new RouteTripSpec(4l, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TRANS_CANADA, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "1", "1051", "1056" })) //
+						Arrays.asList(new String[] { //
+						"1", // Downtown Terminal
+								"23", // <> Princess Avenue @ 8th Street
+								"24", // ++
+								"1051", // ++
+								"1056", // ++
+						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "1056", "1065", "1" })) //
+						Arrays.asList(new String[] { //
+						"1056", // ++
+								"1065", // ++
+								"22", // ++
+								"23", // <> Princess Avenue @ 8th Street
+								"1", // Downtown Terminal
+						})) //
 				.compileBothTripSort());
-		map2.put(6l, new RouteTripSpec(6l, //
-				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL, //
-				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, BRHA) //
+		map2.put(5l, new RouteTripSpec(5l, //
+				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, "ACC North", //
+				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "3056", "3065", "1" })) //
+						Arrays.asList(new String[] { //
+						"1", // Downtown Terminal
+								"18", // ++
+								"3077", // ACC North Campus
+						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "1", "3083", "3056" })) //
+						Arrays.asList(new String[] { //
+						"3077", // ACC North Campus
+								"1009", // ++
+								"16", // Rosser Avenue @ 10th Street
+								"1", // Downtown Terminal
+						})) //
 				.compileBothTripSort());
-		map2.put(9l, new RouteTripSpec(9l, //
+		map2.put(8l, new RouteTripSpec(8l, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL, //
-				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, SOUTH) //
+				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Shoppers Mall") //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "3001", "3090", "1" })) //
+						Arrays.asList(new String[] { //
+						"2007", // Behind Shoppers Mall
+								"2095", // ++
+								"16", // Rosser Avenue @ 10th Street
+								"1", // Downtown Terminal
+						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "1", "2096", "2001" })) //
+						Arrays.asList(new String[] { //
+						"1", // Downtown Terminal
+								"2084", // ++
+								"2007", // Behind Shoppers Mall
+						})) //
 				.compileBothTripSort());
-		map2.put(10l, new RouteTripSpec(10l, //
+		map2.put(14l, new RouteTripSpec(14l, //
+				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL, //
+				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Wankling Blvd") //
+				.addTripSort(MDirectionType.EAST.intValue(), //
+						Arrays.asList(new String[] { //
+						"2036", // Wankling Blvd @ Richmond Avenue
+								"1044", // ++
+								"35", // 13th Street @ Princess Avenue
+								"1", // Downtown Terminal
+						})) //
+				.addTripSort(MDirectionType.WEST.intValue(), //
+						Arrays.asList(new String[] { //
+						"1", // Downtown Terminal
+								"32", // ++
+								"2036", // Wankling Blvd @ Richmond Avenue
+						})) //
+				.compileBothTripSort());
+		map2.put(15l, new RouteTripSpec(15l, //
+				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "ACC", //
+				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL) //
+				.addTripSort(MDirectionType.EAST.intValue(), //
+						Arrays.asList(new String[] { //
+						"1", // Downtown Terminal
+								"3055", // ++
+								"3062", // Assiniboine Community College
+						})) //
+				.addTripSort(MDirectionType.WEST.intValue(), //
+						Arrays.asList(new String[] { //
+						"3062", // Assiniboine Community College
+								"3068", // ++
+								"23", // Princess Avenue @ 8th Street
+								"1", // Downtown Terminal
+						})) //
+				.compileBothTripSort());
+		map2.put(16l, new RouteTripSpec(16l, //
+				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Neelin", //
+				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Shoppers Mall") //
+				.addTripSort(MDirectionType.EAST.intValue(), //
+						Arrays.asList(new String[] { //
+						"3001", // Sobey's South
+								"2033", // ++ Shoppers Mall
+								"3097", // Neelin High School
+						})) //
+				.addTripSort(MDirectionType.WEST.intValue(), //
+						Arrays.asList(new String[] { //
+						"3097", // Neelin High School
+								"2027", //
+								"2099", // Richmond Terminal (south)
+						})) //
+				.compileBothTripSort());
+		map2.put(17l, new RouteTripSpec(17l, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL, //
-				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, SOUTH) //
+				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Shoppers Mall") //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "2004", "3076", "1" })) //
+						Arrays.asList(new String[] { //
+						"2033", // Shoppers Mall
+								"3008", // ++
+								"38", // 10th Street @ Lorne Avenue
+								"1", // Downtown Terminal
+						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "1", "2092", "2012" })) //
+						Arrays.asList(new String[] { //
+						"1", // Downtown Terminal
+								"2088", // ++
+								"2033", // Shoppers Mall
+						})) //
+				.compileBothTripSort());
+		map2.put(22l, new RouteTripSpec(22l, //
+				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL, //
+				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Riverheights") //
+				.addTripSort(MDirectionType.EAST.intValue(), //
+						Arrays.asList(new String[] { //
+						"2066", // Governors Road (east side)
+								"2079", // ++
+								"16", // Rosser Avenue @ 10th Street
+								"1", // Downtown Terminal
+						})) //
+				.addTripSort(MDirectionType.WEST.intValue(), //
+						Arrays.asList(new String[] { //
+						"1", // Downtown Terminal
+								"1017", // ++
+								"2066", // Governors Road (east side)
+						})) //
+				.compileBothTripSort());
+		map2.put(23l, new RouteTripSpec(23l, //
+				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL, //
+				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Crocus") //
+				.addTripSort(MDirectionType.NORTH.intValue(), //
+						Arrays.asList(new String[] { //
+						"2056", // Crocus Plains HS
+								"3047", // ++
+								"23", // Princess Avenue @ 8th Street
+								"1", // Downtown Terminal
+						})) //
+				.addTripSort(MDirectionType.SOUTH.intValue(), //
+						Arrays.asList(new String[] { //
+						"1", // Downtown Terminal
+								"3089", // ++
+								"2056", // Crocus Plains HS
+						})) //
 				.compileBothTripSort());
 		ALL_ROUTE_TRIPS2 = map2;
 	}
@@ -246,38 +350,12 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 		return super.splitTripStop(mRoute, gTrip, gTripStop, splitTrips, routeGTFS);
 	}
 
-	private static final String W = "W";
-	private static final String E = "E";
-
 	@Override
 	public void setTripHeadsign(MRoute mRoute, MTrip mTrip, GTrip gTrip, GSpec gtfs) {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return; // split
 		}
-		if (mRoute.getId() == 5l) {
-			mTrip.setHeadsignString(cleanTripHeadsign(mRoute.getLongName()), 0);
-			return;
-		} else if (mRoute.getId() == 11l) {
-			mTrip.setHeadsignString(cleanTripHeadsign(mRoute.getLongName()), 0);
-			return;
-		} else if (mRoute.getId() == 20l) {
-			if (gTrip.getRouteId().endsWith(E)) {
-				mTrip.setHeadsignDirection(MDirectionType.EAST);
-				return;
-			} else if (gTrip.getRouteId().endsWith(W)) {
-				mTrip.setHeadsignDirection(MDirectionType.WEST);
-				return;
-			}
-		} else if (mRoute.getId() == 21l) {
-			if (gTrip.getRouteId().endsWith(E)) {
-				mTrip.setHeadsignDirection(MDirectionType.EAST);
-				return;
-			} else if (gTrip.getRouteId().endsWith(W)) {
-				mTrip.setHeadsignDirection(MDirectionType.WEST);
-				return;
-			}
-		}
-		System.out.printf("\n%s: Unexptected trip %s!", mRoute.getId(), gTrip);
+		System.out.printf("\n%s: Unexptected trip %s!\n", mRoute.getId(), gTrip);
 		System.exit(-1);
 		return;
 	}
@@ -299,5 +377,4 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 		gStopName = CleanUtils.cleanStreetTypes(gStopName);
 		return CleanUtils.cleanLabel(gStopName);
 	}
-
 }
