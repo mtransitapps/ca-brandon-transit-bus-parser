@@ -168,7 +168,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
 	static {
 		HashMap<Long, RouteTripSpec> map2 = new HashMap<Long, RouteTripSpec>();
-		map2.put(4l, new RouteTripSpec(4l, //
+		map2.put(4L, new RouteTripSpec(4L, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TRANS_CANADA, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
@@ -184,8 +184,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 						"1056", // ++
 								"1065", // ++
 								"22", // ++
-								"23", // <> Princess Avenue @ 8th Street
-								"1", // Downtown Terminal
+								"3106", // Downtown Terminal (Return)
 						})) //
 				.compileBothTripSort());
 		map2.put(5l, new RouteTripSpec(5l, //
@@ -202,7 +201,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 						"3077", // ACC North Campus
 								"1009", // ++
 								"16", // Rosser Avenue @ 10th Street
-								"1", // Downtown Terminal
+								"3106", // Downtown Terminal (Return)
 						})) //
 				.compileBothTripSort());
 		map2.put(8l, new RouteTripSpec(8l, //
@@ -213,7 +212,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 						"2007", // Behind Shoppers Mall
 								"2095", // ++
 								"16", // Rosser Avenue @ 10th Street
-								"1", // Downtown Terminal
+								"3106", // Downtown Terminal (Return)
 						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
 						Arrays.asList(new String[] { //
@@ -230,7 +229,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 						"2036", // Wankling Blvd @ Richmond Avenue
 								"1044", // ++
 								"35", // 13th Street @ Princess Avenue
-								"1", // Downtown Terminal
+								"3106", // Downtown Terminal (Return)
 						})) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList(new String[] { //
@@ -253,7 +252,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 						"3062", // Assiniboine Community College
 								"3068", // ++
 								"23", // Princess Avenue @ 8th Street
-								"1", // Downtown Terminal
+								"3106", // Downtown Terminal (Return)
 						})) //
 				.compileBothTripSort());
 		map2.put(16l, new RouteTripSpec(16l, //
@@ -268,8 +267,9 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList(new String[] { //
 						"3097", // Neelin High School
-								"2027", //
+								"2027", // ++
 								"2099", // Richmond Terminal (south)
+								"3107", // Sobey's South (Return)
 						})) //
 				.compileBothTripSort());
 		map2.put(17l, new RouteTripSpec(17l, //
@@ -280,7 +280,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 						"2033", // Shoppers Mall
 								"3008", // ++
 								"38", // 10th Street @ Lorne Avenue
-								"1", // Downtown Terminal
+								"3106", // Downtown Terminal (Return)
 						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
 						Arrays.asList(new String[] { //
@@ -297,7 +297,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 						"2066", // Governors Road (east side)
 								"2079", // ++
 								"16", // Rosser Avenue @ 10th Street
-								"1", // Downtown Terminal
+								"3106", // Downtown Terminal (Return)
 						})) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList(new String[] { //
@@ -314,7 +314,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 						"2056", // Crocus Plains HS
 								"3047", // ++
 								"23", // Princess Avenue @ 8th Street
-								"1", // Downtown Terminal
+								"3106", // Downtown Terminal (Return)
 						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
 						Arrays.asList(new String[] { //
