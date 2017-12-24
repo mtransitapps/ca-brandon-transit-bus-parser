@@ -157,6 +157,9 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 			// @formatter:on
 			}
 		}
+		if (isGoodEnoughAccepted()) {
+			return null;
+		}
 		System.out.printf("\nUnexpected route color for %s!\n", gRoute);
 		System.exit(-1);
 		return null;
@@ -289,23 +292,6 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 								"2033", // Shoppers Mall
 						})) //
 				.compileBothTripSort());
-		map2.put(22l, new RouteTripSpec(22l, //
-				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL, //
-				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Riverheights") //
-				.addTripSort(MDirectionType.EAST.intValue(), //
-						Arrays.asList(new String[] { //
-						"2066", // Governors Road (east side)
-								"2079", // ++
-								"16", // Rosser Avenue @ 10th Street
-								"3106", // Downtown Terminal (Return)
-						})) //
-				.addTripSort(MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { //
-						"1", // Downtown Terminal
-								"1017", // ++
-								"2066", // Governors Road (east side)
-						})) //
-				.compileBothTripSort());
 		map2.put(23l, new RouteTripSpec(23l, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Crocus") //
@@ -329,7 +315,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public int compareEarly(long routeId, List<MTripStop> list1, List<MTripStop> list2, MTripStop ts1, MTripStop ts2, GStop ts1GStop, GStop ts2GStop) {
 		if (ALL_ROUTE_TRIPS2.containsKey(routeId)) {
-			return ALL_ROUTE_TRIPS2.get(routeId).compare(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
+			return ALL_ROUTE_TRIPS2.get(routeId).compare(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop, this);
 		}
 		return super.compareEarly(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
 	}
@@ -345,7 +331,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public Pair<Long[], Integer[]> splitTripStop(MRoute mRoute, GTrip gTrip, GTripStop gTripStop, ArrayList<MTrip> splitTrips, GSpec routeGTFS) {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
-			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.getId()));
+			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.getId()), this);
 		}
 		return super.splitTripStop(mRoute, gTrip, gTripStop, splitTrips, routeGTFS);
 	}
@@ -354,6 +340,22 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 	public void setTripHeadsign(MRoute mRoute, MTrip mTrip, GTrip gTrip, GSpec gtfs) {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return; // split
+		}
+		if (isGoodEnoughAccepted()) {
+			if (mRoute.getId() == 19L) {
+				mTrip.setHeadsignString( //
+						"Downtown Terminal", //
+						gTrip.getDirectionId() == null ? 0 : gTrip.getDirectionId() //
+				);
+				return;
+			}
+			if (mRoute.getId() == 22L) {
+				mTrip.setHeadsignString( //
+						"Downtown Terminal", //
+						gTrip.getDirectionId() == null ? 0 : gTrip.getDirectionId() //
+				);
+				return;
+			}
 		}
 		System.out.printf("\n%s: Unexptected trip %s!\n", mRoute.getId(), gTrip);
 		System.exit(-1);
