@@ -47,7 +47,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 	public void start(String[] args) {
 		System.out.printf("\nGenerating Brandon Transit bus data...");
 		long start = System.currentTimeMillis();
-		this.serviceIds = extractUsefulServiceIds(args, this);
+		this.serviceIds = extractUsefulServiceIds(args, this, true);
 		super.start(args);
 		System.out.printf("\nGenerating Brandon Transit bus data... DONE in %s.\n", Utils.getPrettyDuration(System.currentTimeMillis() - start));
 	}
@@ -346,7 +346,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return; // split
 		}
-		if (isGoodEnoughAccepted()) {
+		// if (isGoodEnoughAccepted()) {
 			if (mRoute.getId() == 19L) {
 				mTrip.setHeadsignString( //
 						"Downtown Terminal", //
@@ -361,7 +361,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 				);
 				return;
 			}
-		}
+		// }
 		System.out.printf("\n%s: Unexptected trip %s!\n", mRoute.getId(), gTrip);
 		System.exit(-1);
 		return;
