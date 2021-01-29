@@ -161,18 +161,10 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 		if ("IND".equals(gRoute.getRouteShortName())) {
 			return "4F4C4C";
 		}
-		Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
-		if (matcher.find()) {
-			int rsn = Integer.parseInt(matcher.group());
-			switch (rsn) {
-			// @formatter:off
-			// @formatter:on
-			}
-		}
 		throw new MTLog.Fatal("Unexpected route color for %s!", gRoute);
 	}
 
-	private static final String DOWNTOWN_TERMINAL = "Downtown Terminal";
+	private static final String DOWNTOWN_TERMINAL = "Downtown Term";
 	private static final String TRANS_CANADA = "TransCanada";
 
 	private static final HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
@@ -201,7 +193,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 				.compileBothTripSort());
 		//noinspection deprecation
 		map2.put(5L, new RouteTripSpec(5L, //
-				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, "ACC North", //
+				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, "ACC N", //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, DOWNTOWN_TERMINAL) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
 						Arrays.asList(//
@@ -366,14 +358,14 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 		}
 		if (mRoute.getId() == 19L) {
 			mTrip.setHeadsignString( //
-					"Downtown Terminal", //
+					"Downtown Term", //
 					gTrip.getDirectionId() == null ? 0 : gTrip.getDirectionId() //
 			);
 			return;
 		}
 		if (mRoute.getId() == 22L) {
 			mTrip.setHeadsignString( //
-					"Downtown Terminal", //
+					"Downtown Term", //
 					gTrip.getDirectionId() == null ? 0 : gTrip.getDirectionId() //
 			);
 			return;
@@ -384,6 +376,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 	@NotNull
 	@Override
 	public String cleanTripHeadsign(@NotNull String tripHeadsign) {
+		tripHeadsign = CleanUtils.cleanBounds(tripHeadsign);
 		tripHeadsign = CleanUtils.cleanNumbers(tripHeadsign);
 		tripHeadsign = CleanUtils.cleanStreetTypes(tripHeadsign);
 		return CleanUtils.cleanLabel(tripHeadsign);
@@ -396,6 +389,7 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public String cleanStopName(@NotNull String gStopName) {
 		gStopName = AND_SLASH.matcher(gStopName).replaceAll(AND_SLASH_REPLACEMENT);
+		gStopName = CleanUtils.cleanBounds(gStopName);
 		gStopName = CleanUtils.cleanNumbers(gStopName);
 		gStopName = CleanUtils.cleanStreetTypes(gStopName);
 		return CleanUtils.cleanLabel(gStopName);
