@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mtransit.commons.CharUtils;
 import org.mtransit.commons.CleanUtils;
+import org.mtransit.commons.StringUtils;
 import org.mtransit.parser.DefaultAgencyTools;
 import org.mtransit.parser.MTLog;
 import org.mtransit.parser.gtfs.data.GRoute;
@@ -12,6 +13,7 @@ import org.mtransit.parser.mt.data.MAgency;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.mtransit.commons.RegexUtils.DIGITS;
 import static org.mtransit.commons.StringUtils.EMPTY;
 
 // http://opendata.brandon.ca/
@@ -39,28 +41,30 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 		return MAgency.ROUTE_TYPE_BUS;
 	}
 
-	private static final Pattern DIGITS = Pattern.compile("[\\d]+");
+	@Override
+	public boolean defaultRouteIdEnabled() {
+		return true;
+	}
+
+	@Override
+	public boolean useRouteShortNameForRouteId() {
+		return true;
+	}
 
 	@Override
 	public long getRouteId(@NotNull GRoute gRoute) {
-		if (CharUtils.isDigitsOnly(gRoute.getRouteShortName())) {
-			return Long.parseLong(gRoute.getRouteShortName());
-		}
 		if ("IND".equals(gRoute.getRouteShortName())) {
 			return 9001L;
 		}
-		final Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
-		if (matcher.find()) {
-			return Long.parseLong(matcher.group());
-		}
-		throw new MTLog.Fatal("Unexpected route ID for %s!", gRoute);
+		return super.getRouteId(gRoute);
 	}
 
 	@Nullable
 	@Override
 	public String getRouteShortName(@NotNull GRoute gRoute) {
-		if (!CharUtils.isDigitsOnly(gRoute.getRouteShortName())) {
-			final Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
+		final String rsnS = gRoute.getRouteShortName();
+		if (!CharUtils.isDigitsOnly(rsnS)) {
+			final Matcher matcher = DIGITS.matcher(rsnS);
 			if (matcher.find()) {
 				return matcher.group();
 			}
@@ -70,11 +74,15 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 
 	@NotNull
 	@Override
-	public String getRouteLongName(@NotNull GRoute gRoute) {
-		String routeLongName = gRoute.getRouteLongNameOrDefault();
+	public String cleanRouteLongName(@NotNull String routeLongName) {
 		routeLongName = CleanUtils.cleanNumbers(routeLongName);
 		routeLongName = CleanUtils.cleanStreetTypes(routeLongName);
 		return CleanUtils.cleanLabel(routeLongName);
+	}
+
+	@Override
+	public boolean defaultAgencyColorEnabled() {
+		return true;
 	}
 
 	private static final String AGENCY_COLOR_BLUE = "00B8F1"; // BLUE (from web site CSS)
@@ -89,27 +97,31 @@ public class BrandonTransitBusAgencyTools extends DefaultAgencyTools {
 
 	@Nullable
 	@Override
-	public String getRouteColor(@NotNull GRoute gRoute) {
-		if (CharUtils.isDigitsOnly(gRoute.getRouteShortName())) {
-			final int rsn = Integer.parseInt(gRoute.getRouteShortName());
-			switch (rsn) {
-			// @formatter:off
-			case 4: return "409AED";
-			case 5: return "A83800";
-			case 8: return "F8E208"; // "FAEB52";
-			case 14: return "960096";
-			case 15: return "0070FF";
-			case 16: return "66C7EB";
-			case 17: return "FF00C4";
-			case 22: return "FFAB00";
-			case 23: return "73B373";
-			// @formatter:on
+	public String getRouteColor(@NotNull GRoute gRoute, @NotNull MAgency agency) {
+		if (StringUtils.isEmpty(gRoute.getRouteColor())) {
+			final String rnsS = gRoute.getRouteShortName();
+			if (CharUtils.isDigitsOnly(rnsS)) {
+				final int rsn = Integer.parseInt(rnsS);
+				switch (rsn) {
+				// @formatter:off
+				case 4: return "409AED";
+				case 5: return "A83800";
+				case 8: return "F8E208"; // "FAEB52";
+				case 14: return "960096";
+				case 15: return "0070FF";
+				case 16: return "66C7EB";
+				case 17: return "FF00C4";
+				case 22: return "FFAB00";
+				case 23: return "73B373";
+				// @formatter:on
+				}
 			}
+			if ("IND".equals(rnsS)) {
+				return "4F4C4C";
+			}
+			throw new MTLog.Fatal("Unexpected route color for %s!", gRoute);
 		}
-		if ("IND".equals(gRoute.getRouteShortName())) {
-			return "4F4C4C";
-		}
-		throw new MTLog.Fatal("Unexpected route color for %s!", gRoute);
+		return super.getRouteColor(gRoute, agency);
 	}
 
 	@Override
